@@ -1,5 +1,7 @@
 package com.saude.cardio.service;
 
+import com.saude.cardio.dto.LoginRequest;
+import com.saude.cardio.dto.LoginResponse;
 import com.saude.cardio.dto.UsuarioCadastroRequest;
 import com.saude.cardio.dto.UsuarioResponse;
 import com.saude.cardio.exception.ExcecaoNegocio;
@@ -16,6 +18,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Transactional
     public UsuarioResponse cadastrar(UsuarioCadastroRequest request) {
@@ -40,6 +43,26 @@ public class UsuarioService {
                 .nome(salvo.getNome())
                 .email(salvo.getEmail())
                 .dataCriacao(salvo.getDataCriacao())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest request) {
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ExcecaoNegocio(404, "Usuário não encontrado."));
+
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getSenha())) {
+            throw new ExcecaoNegocio(401, "Senha incorreta.");
+        }
+
+        String token = jwtService.gerarToken(usuario);
+
+        return LoginResponse.builder()
+                .token(token)
+                .id(usuario.getId())
+                .email(usuario.getEmail())
+                .firstName(usuario.getNome())
+                .lastName(usuario.getSobrenome())
                 .build();
     }
 
