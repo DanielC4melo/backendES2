@@ -1,7 +1,10 @@
 package com.saude.cardio.service;
 
 import com.saude.cardio.config.JwtProperties;
+import com.saude.cardio.exception.ExcecaoNegocio;
 import com.saude.cardio.model.Usuario;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,8 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+
+    private static final String PREFIXO_BEARER = "Bearer ";
 
     private final JwtProperties jwtProperties;
 
@@ -29,6 +34,30 @@ public class JwtService {
                 .expiration(expiracao)
                 .signWith(obterChaveSecreta())
                 .compact();
+    }
+
+    public Long extrairUsuarioIdDoToken(String authorization) {
+        if (authorization == null || authorization.isBlank()) {
+            throw new ExcecaoNegocio(401, "Token de autenticação ausente ou inválido.");
+        }
+
+        if (!authorization.startsWith(PREFIXO_BEARER)) {
+            throw new ExcecaoNegocio(401, "Token de autenticação ausente ou inválido.");
+        }
+
+        String token = authorization.substring(PREFIXO_BEARER.length()).trim();
+
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(obterChaveSecreta())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return claims.get("id", Long.class);
+        } catch (JwtException | IllegalArgumentException ex) {
+            throw new ExcecaoNegocio(401, "Token de autenticação ausente ou inválido.");
+        }
     }
 
     private SecretKey obterChaveSecreta() {
