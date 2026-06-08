@@ -39,4 +39,19 @@ public class PressaoArterialParser {
         }
         return new int[]{sistolica, diastolica};
     }
+
+    /**
+     * Formata a média das pressões arteriais no padrão compacto do contrato (ex: "12 por 8").
+     * Valores acima de 100 mmHg são convertidos para a escala reduzida dividindo por 10.
+     */
+    public String formatarMediaPressao(double mediaSistolica, double mediaDiastolica) {
+        int sistolicaArredondada = (int) Math.round(mediaSistolica);
+        int diastolicaArredondada = (int) Math.round(mediaDiastolica);
+
+        if (sistolicaArredondada >= 100 && diastolicaArredondada >= 10) {
+            return (sistolicaArredondada / 10) + " por " + (diastolicaArredondada / 10);
+        }
+
+        return sistolicaArredondada + " por " + diastolicaArredondada;
+    }
 }
