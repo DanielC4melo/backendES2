@@ -33,6 +33,13 @@ public class GlobalExceptionHandler {
                 .body(new Erro(400, "Corpo da requisicao invalido ou mal formatado"));
     }
 
+    @ExceptionHandler(ExcecaoNegocio.class)
+    public ResponseEntity<Erro> handleExcecaoNegocio(ExcecaoNegocio ex) {
+        return ResponseEntity
+                .status(ex.getCodigo())
+                .body(new Erro(ex.getCodigo(), ex.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Erro> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity
@@ -49,6 +56,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Erro> handleGeneric(Exception ex) {
+        ex.printStackTrace(); // Log do stack trace para depuração
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new Erro(500, "Erro interno do servidor"));
