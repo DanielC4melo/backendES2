@@ -56,6 +56,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Erro> handleGeneric(Exception ex) {
+        ex.printStackTrace(); // Log do stack trace para depuração
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new Erro(500, "Erro interno do servidor"));
