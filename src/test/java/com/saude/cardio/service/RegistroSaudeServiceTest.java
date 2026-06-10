@@ -88,7 +88,7 @@ class RegistroSaudeServiceTest {
             return registro;
         });
 
-        RegistroSaudeResponse resposta = registroSaudeService.registrar(1L, authorization, requestCritico);
+        RegistroSaudeResponse resposta = registroSaudeService.registrar(1L, requestCritico);
 
         assertNotNull(resposta);
         assertEquals(StatusAlerta.CRITICO, resposta.getStatusAlerta());

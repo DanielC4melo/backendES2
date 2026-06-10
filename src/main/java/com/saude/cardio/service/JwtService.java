@@ -64,4 +64,19 @@ public class JwtService {
         byte[] bytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(bytes);
     }
+
+    public String extractEmail(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(obterChaveSecreta())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            
+            return claims.get("email", String.class);
+        } catch (JwtException | IllegalArgumentException ex) {
+            return null; // Retorna null se o token for inválido
+        }
+    }
+
 }

@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,9 +23,8 @@ public class RegistroSaudeController {
     @PostMapping
     public ResponseEntity<RegistroSaudeResponse> registrar(
             @PathVariable Long id,
-            @RequestHeader("Authorization") String authorization,
             @Valid @RequestBody RegistroSaudeRequest request) {
-        RegistroSaudeResponse response = registroSaudeService.registrar(id, authorization, request);
+        RegistroSaudeResponse response = registroSaudeService.registrar(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

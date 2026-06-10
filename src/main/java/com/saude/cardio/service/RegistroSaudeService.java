@@ -9,6 +9,8 @@ import com.saude.cardio.model.Usuario;
 import com.saude.cardio.repository.RegistroSaudeRepository;
 import com.saude.cardio.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,14 +46,17 @@ public class RegistroSaudeService {
     private final TriagemCardiacaService triagemCardiacaService;
 
     @Transactional
-    public RegistroSaudeResponse registrar(Long usuarioId, String authorization, RegistroSaudeRequest request) {
-        Long usuarioAutenticadoId = jwtService.extrairUsuarioIdDoToken(authorization);
-        validarEscopo(usuarioId, usuarioAutenticadoId);
+    public RegistroSaudeResponse registrar(Long usuarioId, RegistroSaudeRequest request) {
+        String emailAutenticado = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        Usuario usuarioAutenticado = usuarioRepository.findByEmail(emailAutenticado)
+                .orElseThrow(() -> new ExcecaoNegocio(401, "Usuário não autenticado"));
+
+        validarEscopo(usuarioId, usuarioAutenticado.getId());
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ExcecaoNegocio(404, "Usuário não encontrado."));
-
-        int[] pressao = pressaoArterialParser.extrairSistolicaEDiastolica(request.getPressaoArterial());
+        
+                int[] pressao = pressaoArterialParser.extrairSistolicaEDiastolica(request.getPressaoArterial());
         validadorLimitesVitales.validar(request, pressao[0], pressao[1]);
 
         var statusAlerta = triagemCardiacaService.calcularStatus(request, pressao[0]);
@@ -78,12 +83,14 @@ public class RegistroSaudeService {
     @Transactional(readOnly = true)
     public List<RelatorioDiarioResponse> gerarRelatorios(
             Long usuarioId,
-            String authorization,
             String inicio,
             String fim) {
 
-        Long usuarioAutenticadoId = jwtService.extrairUsuarioIdDoToken(authorization);
-        validarEscopo(usuarioId, usuarioAutenticadoId);
+
+        String emailAutenticado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuarioAutenticado = usuarioRepository.findByEmail(emailAutenticado)
+                .orElseThrow(() -> new ExcecaoNegocio(401, "Usuário não autenticado"));
+        validarEscopo(usuarioId, usuarioAutenticado.getId());
 
         if (!usuarioRepository.existsById(usuarioId)) {
             throw new ExcecaoNegocio(404, "Usuário não encontrado.");
