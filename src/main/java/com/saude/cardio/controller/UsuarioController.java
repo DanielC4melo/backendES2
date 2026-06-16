@@ -1,23 +1,25 @@
 package com.saude.cardio.controller;
 
-import com.saude.cardio.dto.LoginRequest;
-import com.saude.cardio.dto.LoginResponse;
-import com.saude.cardio.dto.UsuarioCadastroRequest;
-import com.saude.cardio.dto.UsuarioResponse;
-import com.saude.cardio.service.UsuarioService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import com.saude.cardio.service.UsuarioService;
+import com.saude.cardio.dto.UsuarioCadastroRequest;
+import com.saude.cardio.dto.UsuarioResponse;
+import com.saude.cardio.dto.LoginRequest;
+import com.saude.cardio.dto.LoginResponse;
 
 @RestController
-@RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Liberando o acesso para o nosso Ionic!
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+
+    // Construtor para injetar o serviço corretamente (resolve o erro amarelo)
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @PostMapping("/usuarios")
     public ResponseEntity<UsuarioResponse> cadastrar(@Valid @RequestBody UsuarioCadastroRequest request) {

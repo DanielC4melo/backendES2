@@ -13,4 +13,5 @@ public interface RegistroSaudeRepository extends JpaRepository<RegistroSaude, Lo
             LocalDateTime inicio,
             LocalDateTime fim
     );
+    List<RegistroSaude> findByUsuarioIdOrderByDataHoraDesc(Long usuarioId);
 }

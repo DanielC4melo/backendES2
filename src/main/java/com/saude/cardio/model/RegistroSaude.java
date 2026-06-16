@@ -1,24 +1,7 @@
 package com.saude.cardio.model;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,6 +36,7 @@ public class RegistroSaude {
     @Column(nullable = false)
     private double pesoCorporal;
 
+    // Mantenha APENAS esta declaração de sintomas:
     @ElementCollection
     @CollectionTable(name = "registro_saude_sintomas", joinColumns = @JoinColumn(name = "registro_id"))
     @Column(name = "sintoma")
