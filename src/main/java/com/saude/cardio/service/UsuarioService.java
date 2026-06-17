@@ -51,7 +51,8 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ExcecaoNegocio(404, "Usuário não encontrado."));
 
-        if (!passwordEncoder.matches(request.getPassword(), usuario.getSenha())) {
+        // AJUSTE: Mudei para getSenha() para bater com o cadastro e provavelmente com seu LoginRequest
+        if (!passwordEncoder.matches(request.getSenha(), usuario.getSenha())) {
             throw new ExcecaoNegocio(401, "Senha incorreta.");
         }
 

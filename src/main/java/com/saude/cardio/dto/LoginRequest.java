@@ -17,6 +17,6 @@ public class LoginRequest {
     @Email(message = "O campo email deve ser um endereço de e-mail válido.")
     private String email;
 
-    @NotBlank(message = "O campo password é obrigatório.")
-    private String password;
+    @NotBlank(message = "O campo senha é obrigatório.")
+    private String senha;
 }
